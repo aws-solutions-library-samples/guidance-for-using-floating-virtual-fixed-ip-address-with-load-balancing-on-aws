@@ -1,4 +1,4 @@
-# Guidance Title (required)
+# Guidance for using Floating/virtual fixed IP address with Load Balancing on AWS 
 
 The Guidance title should be consistent with the title established first in Alchemy.
 
@@ -7,7 +7,7 @@ The Guidance title should be consistent with the title established first in Alch
 This title correlates exactly to the Guidance it’s linked to, including its corresponding sample code repository. 
 
 
-## Table of Contents (required)
+## Table of Contents
 
 List the top-level sections of the README template, along with a hyperlink to the specific section.
 
@@ -34,8 +34,9 @@ List the top-level sections of the README template, along with a hyperlink to th
 
 1. Provide a brief overview explaining the what, why, or how of your Guidance. You can answer any one of the following to help you write this:
 
-    - **Why did you build this Guidance?**
-    - **What problem does this Guidance solve?**
+There are situations when there is a technical requirement for a static, single IP address to reach an IT system from within the private network. Even though, each instance living in the network, like EC2, RDS, or FSx has its own, unique IP address, it gets challenging when high availability with Multi-AZ deployment is also required and no DNS can be used. In this situation, Multi-AZ Network Load Balancer deployment, which provides multiple static IP addresses distributed across multiple AZs and single DNS, is not an option. 
+
+Floating (or virtual) IP provides a solution to have one fixed IP and dynamically change target providing e.g. failover capabilities
 
 2. Include the architecture diagram image, as well as the steps explaining the high-level overview and flow of the architecture. 
     - To add a screenshot, create an ‘assets/images’ folder in your repository and upload your screenshot to it. Then, using the relative file path, add it to your README. 
