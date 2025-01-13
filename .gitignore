@@ -1,0 +1,4 @@
+node_modules/
+dest/
+cdk.out/
+.vscode

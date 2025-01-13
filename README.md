@@ -1,24 +1,16 @@
 # Guidance for using Floating/virtual fixed IP address with Load Balancing on AWS 
-
-The Guidance title should be consistent with the title established first in Alchemy.
-
-**Example:** *Guidance for Product Substitutions on AWS*
-
-This title correlates exactly to the Guidance it’s linked to, including its corresponding sample code repository. 
-
+This guidance demonstrates how to configure and automatically manage private, floating IP in a VPC to achieve high availability while maintaining single IP address.
 
 ## Table of Contents
 
-List the top-level sections of the README template, along with a hyperlink to the specific section.
-
 ### Required
 
-1. [Overview](#overview-required)
+1. [Overview](#overview)
     - [Architecture](#architecture)
     - [Cost](#cost)
-3. [Prerequisites](#prerequisites-required)
-    - [Operating System](#operating-system-required)
-4. [Deployment Steps](#deployment-steps-required)
+3. [Prerequisites](#prerequisites)
+    - [Operating System](#operating-system)
+4. [Deployment Steps](#deployment-steps)
 5. [Deployment Validation](#deployment-validation-required)
 6. [Running the Guidance](#running-the-guidance-required)
 7. [Next Steps](#next-steps-required)
@@ -31,23 +23,22 @@ List the top-level sections of the README template, along with a hyperlink to th
 10. [Notices](#notices-optional)
 11. [Authors](#authors-optional)
 
-## Overview (required)
-
-1. Provide a brief overview explaining the what, why, or how of your Guidance. You can answer any one of the following to help you write this:
+## Overview
 
 There are situations when there is a technical requirement for a static, single IP address to reach an IT system from within the private network. Even though, each instance living in the network, like EC2, RDS, or FSx has its own, unique IP address, it gets challenging when high availability with Multi-AZ deployment is also required and no DNS can be used. In this situation, Multi-AZ Network Load Balancer deployment, which provides multiple static IP addresses distributed across multiple AZs and single DNS, is not an option. 
 
 Floating (or virtual) IP provides a solution to have one fixed IP and dynamically change target providing e.g. failover capabilities
 
 ### Architecture
-2. Include the architecture diagram image, as well as the steps explaining the high-level overview and flow of the architecture. 
 
-Below is the reference architecture of this guidance showing AWS services deployed and flow of interaction of client applcations with Floating-IP system
+Below is the reference architecture of this guidance showing AWS services deployed and flow of interaction of client applications with system behing a Floating-IP.
 
-![img](assets/floating-ip-reference-architecture_v1.jpg)
-**Figure 1. Reference Architecture of  Guidance for using Floating/virtual fixed IP address with Load Balancing on AWS** 
+The VPCs, subnets and the target EC2 Instances, representing business application, could be pre-existing ones or can be deployed as part of this guidance. For more information, please refer to the [Deployment Steps](#deployment-steps) below. 
 
-### Cost ( required )
+![img](assets/floating_ip_reference_architecture.jpg)
+**Figure 1. Reference Architecture of guidance for using Floating/virtual fixed IP on AWS** 
+
+### Cost
 
 This section is for a high-level cost estimate. Think of a likely straightforward scenario with reasonable assumptions based on the problem the Guidance is trying to solve. Provide an in-depth cost breakdown table in this section below ( you should use AWS Pricing Calculator to generate cost breakdown ).
 
@@ -71,18 +62,32 @@ The following table provides a sample cost breakdown for deploying this Guidance
 | Amazon API Gateway | 1,000,000 REST API calls per month  | $ 3.50month |
 | Amazon Cognito | 1,000 active users per month without advanced security feature | $ 0.00 |
 
-## Prerequisites (required)
+## Prerequisites
 
-### Operating System (required)
+### Network
+- VPC with Internet access or VPC Endpoints to Cloudwatch and monitoring. Endpoints can be accessed by probing and Failover Lambda functions.
+- Target instances should have security groups configured in a way, that the probing lambda can access them(e.g. source and port are open for the Lambda's ENI)
 
-- Talk about the base Operating System (OS) and environment that can be used to run or deploy this Guidance, such as *Mac, Linux, or Windows*. Include all installable packages or modules required for the deployment. 
-- By default, assume Amazon Linux 2/Amazon Linux 2023 AMI as the base environment. All packages that are not available by default in AMI must be listed out.  Include the specific version number of the package or module.
+By deploying the VpcStack, which is an optional part of this guidance, the prerequisites can be deployed as well.
+
+### Operating System
+This guidance requires, that the floating-ip is known to the operating system and configured for the network adapter. By default, AMIs like for AL2(Amazon Linux 2), configure only the IP addresses privided during instantiation of the instance. 
 
 **Example:**
-“These deployment instructions are optimized to best work on **<Amazon Linux 2 AMI>**.  Deployment in another OS may require additional steps.”
-
-- Include install commands for packages, if applicable.
-
+These deployment instructions are optimized to best work on **<Amazon Linux 2 AMI>**.  Deployment in another OS may require additional steps. To configure the floating IP address on existing AL2 instance follow the steps. You might need root permissions:
+1. Navigate to /etc/sysconfig/network-scripts/
+2. Create new file called `eth0:0` for eth0 ENI(Elastic Network Interface)
+3. Copy and paste the content of the [example  file](deployment/vpc/eth0:0)
+```
+DEVICE=eth0:0
+BOOTPROTO=static
+ONBOOT=yes
+PREFIX=32
+IPADDR=20.0.0.10
+```
+4. Change the IP address `IPADDR` to the desired floating IP(here 20.0.0.10)
+5. Restart the networking service:  `service network restart`
+6. Validate the IP `ip addr show eth0`. The additional IP address should be visible.
 
 ### Third-party tools (If applicable)
 
@@ -119,7 +124,7 @@ The following table provides a sample cost breakdown for deploying this Guidance
 <If the Guidance is built for specific AWS Regions, or if the services used in the Guidance do not support all Regions, please specify the Region this Guidance is best suited for>
 
 
-## Deployment Steps (required)
+## Deployment Steps
 
 Deployment steps must be numbered, comprehensive, and usable to customers at any level of AWS expertise. The steps must include the precise commands to run, and describe the action it performs.
 
@@ -154,7 +159,7 @@ Deployment steps must be numbered, comprehensive, and usable to customers at any
 
 
 
-## Running the Guidance (required)
+## Running the Guidance
 
 <Provide instructions to run the Guidance with the sample data or input provided, and interpret the output received.> 
 

@@ -1,0 +1,31 @@
+{
+  "name": "guidance-for-using-floating-virtual-fixed-ip-address-with-load-balancing-on-aws",
+  "version": "1.0.0",
+  "description": "This guidance demonstrates how to configure and automatically manage private floating-IP in a VPC to achieve high availability.",
+  "main": "index.js",
+  "bin": {
+    "cdk-init": "bin/cdk-init.js"
+  },
+  "scripts": {
+    "build": "npm run prettier && tsc",
+    "watch": "tsc -w",
+    "cdk": "cdk"
+  },
+  "author": "mikolodz",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.147",
+    "@types/node": "22.7.9",
+    "aws-cdk": "2.175.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "@aws-sdk/client-cloudwatch": "^3.744.0",
+    "@aws-sdk/client-ec2": "^3.744.0",
+    "aws-cdk-lib": "^2.176.0",
+    "aws-lambda": "^1.0.7",
+    "axios": "^1.8.1",
+    "constructs": "^10.4.2"
+  }
+}

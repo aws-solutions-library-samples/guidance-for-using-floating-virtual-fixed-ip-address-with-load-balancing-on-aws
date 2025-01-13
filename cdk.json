@@ -1,0 +1,16 @@
+{
+  "app": "npx ts-node --prefer-ts-exts bin/app.ts",
+  "profile": "secondary",
+  "context": {
+    "floating_ip": "ENTER-VALUE",
+    "vpc_id": "ENTER-VALUE",
+    "client_subnet_ids": "ENTER-VALUE",
+    "target_eni_primary": "ENTER-VALUE",
+    "target_eni_secondary": "ENTER-VALUE",
+    "probing_timeout": "700",
+    "probing_failed_threshold": 3,
+    "probing_interval": 10,
+    "probing_protocol": "HTTP",
+    "probing_port": 80
+  }
+}
