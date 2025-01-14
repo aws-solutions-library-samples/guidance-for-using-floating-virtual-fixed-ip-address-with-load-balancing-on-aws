@@ -14,14 +14,15 @@ List the top-level sections of the README template, along with a hyperlink to th
 ### Required
 
 1. [Overview](#overview-required)
+    - [Architecture](#architecture)
     - [Cost](#cost)
-2. [Prerequisites](#prerequisites-required)
+3. [Prerequisites](#prerequisites-required)
     - [Operating System](#operating-system-required)
-3. [Deployment Steps](#deployment-steps-required)
-4. [Deployment Validation](#deployment-validation-required)
-5. [Running the Guidance](#running-the-guidance-required)
-6. [Next Steps](#next-steps-required)
-7. [Cleanup](#cleanup-required)
+4. [Deployment Steps](#deployment-steps-required)
+5. [Deployment Validation](#deployment-validation-required)
+6. [Running the Guidance](#running-the-guidance-required)
+7. [Next Steps](#next-steps-required)
+8. [Cleanup](#cleanup-required)
 
 ***Optional***
 
@@ -38,8 +39,13 @@ There are situations when there is a technical requirement for a static, single 
 
 Floating (or virtual) IP provides a solution to have one fixed IP and dynamically change target providing e.g. failover capabilities
 
+### Architecture
 2. Include the architecture diagram image, as well as the steps explaining the high-level overview and flow of the architecture. 
-    - To add a screenshot, create an ‘assets/images’ folder in your repository and upload your screenshot to it. Then, using the relative file path, add it to your README. 
+
+Below is the reference architecture of this guidance showing AWS services deployed and flow of interaction of client applcations with Floating-IP system
+
+![img](assets/floating-ip-reference-architecture_v1.jpg)
+**Figure 1. Reference Architecture of  Guidance for using Floating/virtual fixed IP address with Load Balancing on AWS** 
 
 ### Cost ( required )
 
