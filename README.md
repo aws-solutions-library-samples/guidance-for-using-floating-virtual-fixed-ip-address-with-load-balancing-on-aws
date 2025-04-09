@@ -29,6 +29,10 @@ There are situations when there is a technical requirement for a static, single 
 
 Floating (or virtual) IP provides a solution to have one fixed IP and dynamically change target providing e.g. failover capabilities
 
+### Use cases
+
+**TO DO - add specific use case descriptions here**
+
 ### Architecture
 
 Below is the reference architecture of this guidance showing AWS services deployed and flow of interaction of client applications with system behing a Floating-IP.
@@ -36,31 +40,66 @@ Below is the reference architecture of this guidance showing AWS services deploy
 The VPCs, subnets and the target EC2 Instances, representing business application, could be pre-existing ones or can be deployed as part of this guidance. For more information, please refer to the [Deployment Steps](#deployment-steps) below. 
 
 ![img](assets/floating_ip_reference_architecture.jpg)
-**Figure 1. Reference Architecture of guidance for using Floating/virtual fixed IP on AWS** 
+**Figure 1. Reference Architecture for Guidance for using Floating/virtual fixed IP on AWS** 
 
-### Cost
+### AWS Services used in this Guidance
 
-This section is for a high-level cost estimate. Think of a likely straightforward scenario with reasonable assumptions based on the problem the Guidance is trying to solve. Provide an in-depth cost breakdown table in this section below ( you should use AWS Pricing Calculator to generate cost breakdown ).
+| **AWS service**  | Role | Description | Service Availability |
+|-----------|------------|-------------|-------------|
+|[Amazon EventBridge](https://aws.amazon.com/eventbridge/)| Core service | Rules and custom event buses are used for notifying and detecting new resources.| [Documentation](https://docs.aws.amazon.com/general/latest/gr/ev.html#ev_region) |
+[AWS Step Functions](https://aws.amazon.com/step-functions/)| Core Service | Serverless state machine used for filtering, subscribing and updating information. | [Documentation](https://docs.aws.amazon.com/general/latest/gr/step-functions.html#ram_region) |
+[AWS Systems Manager](https://aws.amazon.com/systems-manager/)| Support Service | Used to store parameters that will later be shared. | [Documentation](https://docs.aws.amazon.com/general/latest/gr/ssm.html#ssm_region) |
+[AWS Resource Access Manager (RAM)](https://aws.amazon.com/ram/)| Support Service | Used to share parameters among accounts. | [Documentation](https://docs.aws.amazon.com/general/latest/gr/ram.html#ram_region) |
+[Amazon Simple Queue Service (SQS)](https://aws.amazon.com/sqs/)| Support Service | Used to store unprocessed messages for troubleshooting. | [Documentation](https://docs.aws.amazon.com/general/latest/gr/sqs-service.html#ram_region)
 
-Start this section with the following boilerplate text:
+### Cost 
 
-_You are responsible for the cost of the AWS services used while running this Guidance. As of <month> <year>, the cost for running this Guidance with the default settings in the <Default AWS Region (Most likely will be US East (N. Virginia)) > is approximately $<n.nn> per month for processing ( <nnnnn> records )._
+You are responsible for the cost of the AWS services deployed while running this guidance. As of November 2024, the cost of running this Guidance with default settings lies within the Free Tier, except for the use of AWS Systems Manager Advanced Paramter storage.
 
-Replace this amount with the approximate cost for running your Guidance in the default Region. This estimate should be per month and for processing/serving resonable number of requests/entities.
+We recommend creating a [budget](https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-create.html) through [AWS Cost Explorer](http://aws.amazon.com/aws-cost-management/aws-cost-explorer/) to help manage costs. Prices are subject to change. You can also estimate the cost for your architecture solution using [AWS Pricing Calculator](https://calculator.aws/#/). For full details, refer to the pricing webpage for each AWS service used in this Guidance or visit [Pricing by AWS Service](#pricing-by-aws-service).
 
-Suggest you keep this boilerplate text:
-_We recommend creating a [Budget](https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html) through [AWS Cost Explorer](https://aws.amazon.com/aws-cost-management/aws-cost-explorer/) to help manage costs. Prices are subject to change. For full details, refer to the pricing webpage for each AWS service used in this Guidance._
+**Estimated monthly cost breakdown - Networking Account**
 
-### Sample Cost Table ( required )
+This breakdown of the costs of the Networking Account shows that the highest cost of the implementation is the [Advanced Parameter Storage](https://docs.aws.amazon.com/systems-manager/latest/userguide/parameter-store-advanced-parameters.html) resource from AWS Systems Manager service. The costs are estimated for US East 1 (Virginia) `us-east-1` region for one month.
 
-**Note : Once you have created a sample cost table using AWS Pricing Calculator, copy the cost breakdown to below table and upload a PDF of the cost estimation on BuilderSpace. Do not add the link to the pricing calculator in the ReadMe.**
+| **AWS service**  | Dimensions | Cost, month \[USD\] |
+|-----------|------------|------------|
+| AWS Systems Manager | 1 advanced parameter | \$ 0.05 |
+| Amazon EventBridge  | <= 1 million custom events | \$ 1.00 |
+| AWS Step Functions  | < 4,000 state transitions | \$ 0.00 |
+| Amazon SQS          | < 1 million requests/month | \$ 0.00 |
+| **TOTAL estimate** |  | **\$ 1.05/month** |
 
-The following table provides a sample cost breakdown for deploying this Guidance with the default parameters in the US East (N. Virginia) Region for one month.
+**Estimated monthly cost breakdown - Spoke Accounts**
 
-| AWS service  | Dimensions | Cost [USD] |
-| ----------- | ------------ | ------------ |
-| Amazon API Gateway | 1,000,000 REST API calls per month  | $ 3.50month |
-| Amazon Cognito | 1,000 active users per month without advanced security feature | $ 0.00 |
+The following table provides a sample cost breakdown for deploying this Guidance in 1,000 different spoke Accounts which are likely to provide a VPC Lattice service in the future. The costs are estimated in the Ireland `eu-west-1` region for one month.
+
+| **AWS service**  | Dimensions | Cost, month \[USD\] |
+|-----------|------------|------------|
+| Amazon EventBridge  | <= 1 million custom events | \$ 1.00 |
+| AWS Step Functions  | < 4,000 state transitions | \$ 0.00 |
+| Amazon SQS          | <= 1 million requests/month | \$ 0.00 |
+| **TOTAL estimate** |  | **\$ 1.00/month** |
+
+Please see price breakdown details in this [AWS calculator](https://calculator.aws/#/estimate?id=6ee067550372e1563469fded6e9f69d665113897)
+
+**Pricing by AWS Service**
+
+Bellow are the pricing references for each AWS Service used in this Guidance.
+
+| **AWS service**  |  Pricing  |
+|-----------|---------------|
+|[Amazon EventBridge](https://aws.amazon.com/eventbridge/)| [Documentation](https://aws.amazon.com/eventbridge/pricing/) |
+[AWS Step Functions](https://aws.amazon.com/step-functions/)|  [Documentation](https://aws.amazon.com/step-functions/pricing/) |
+[AWS Systems Manager](https://aws.amazon.com/systems-manager/)|  [Documentation](https://aws.amazon.com/systems-manager/pricing/) |
+[Amazon Simple Queue Service (SQS)](https://aws.amazon.com/sqs/)| [Documentation](https://aws.amazon.com/sqs/pricing/)
+
+## Prerequisites
+
+### Operating System
+
+This Guidance uses [AWS Serverless](https://aws.amazon.com/serverless/) managed services, so there's no OS patching or management.
+
 
 ## Prerequisites
 
@@ -214,11 +253,17 @@ Document all notable changes to this project.
 
 Consider formatting this section based on Keep a Changelog, and adhering to Semantic Versioning.
 
-## Notices (optional)
+## License
 
-Include a legal disclaimer
+This library is licensed under the MIT-0 License. See the [LICENSE](LICENSE) file.
 
-**Example:**
+## Contributing
+
+See [CONTRIBUTING](CONTRIBUTING.md) for more information.
+
+## Notices
+
+
 *Customers are responsible for making their own independent assessment of the information in this Guidance. This Guidance: (a) is for informational purposes only, (b) represents AWS current product offerings and practices, which are subject to change without notice, and (c) does not create any commitments or assurances from AWS and its affiliates, suppliers or licensors. AWS products or services are provided “as is” without warranties, representations, or conditions of any kind, whether express or implied. AWS responsibilities and liabilities to its customers are controlled by AWS agreements, and this Guidance is not part of, nor does it modify, any agreement between AWS and its customers.*
 
 
