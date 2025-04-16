@@ -13,7 +13,7 @@ This guidance demonstrates how to configure and automatically manage private, fl
 4. [Deployment Steps](#deployment-steps)
 5. [Deployment Validation](#deployment-validation)
 6. [Running the Guidance](#running-the-guidance)
-7. [Next Steps](#next-steps-required)
+7. [Next Steps](#next-steps)
 8. [Cleanup](#cleanup)
 
 ***Optional***
@@ -39,8 +39,33 @@ Below is the reference architecture of this guidance showing AWS services deploy
 
 The VPCs, subnets and the target EC2 Instances, representing business application, could be pre-existing ones or can be deployed as part of this guidance. For more information, please refer to the [Deployment Steps](#deployment-steps) below. 
 
-![img](assets/floating_ip_reference_architecture.jpg)
+![img](assets/floating-ip-reference-architecture_v2.jpg)
 **Figure 1. Reference Architecture for Floating/virtual fixed IP address with Load Balancing on AWS ** 
+
+**Architecture Workflow**
+
+0. The client application (e.g. running on [Amazon EC2](https://aws.amazon.com/pm/ec2/) ) connects to the target cloud resource through floating-IP. It represents the business application.
+1. [Amazon EventBridge](https://aws.amazon.com/eventbridge/) Scheduler invokes every minute the [AWS Step Functions](https://aws.amazon.com/step-functions/) flow which orchestrates the health checks and failover process of floating-IP, if needed.. 
+2. AWS Step Functions flow execution iterates over set of steps every N seconds, where N is configurable. One execution runs up to a minute.
+3. As an initial step, the context (probing counter and last probing result) from previous Step Function execution is retrieved from [Amazon DynamoDB](https://aws.amazon.com/pm/dynamodb/).
+4. AWS Lambda probing function is invoked. The context from previous execution is passed as its input.
+5. The probing AWS Lambda function checks the health of the target of the floating-IP, returns the probing result back to AWS Step Functions execution. In case of failed health check, it increases the count of failed health checks by one and sets the probing result to ”failed”. 
+6. The probing function logs metrics like response time and failed probes in [Amazon CloudWatch](https://aws.amazon.com/cloudwatch/) Metrics
+7. If the threshold of failed health checks is reached, the failover procedure is initialized by Step Functions flow. The failover  AWS Lambda function is invoked to execute the procedure.
+8. The failover AWS Lambda function manipulates one or more Route Tables, and changes the target ENI (Elastic Network Interface) of the route associated with the floating-IP to the one in "secondary" subnet
+9. The failover function logs failover count metrics in Amazon CloudWatch Metrics.
+10. By the end of the AWS Step Functions execution, the context of the execution is stored in the Amazon DynamoDB.
+11. All metrics in Amazon CloudWatch could be used to build monitoring dashboards or set alarms in CloudWatch.
+
+
+ 
+
+
+
+
+
+ 
+
 
 ### AWS Services used in this Guidance
 
@@ -51,8 +76,7 @@ The VPCs, subnets and the target EC2 Instances, representing business applicatio
 [AWS Systems Manager](https://aws.amazon.com/systems-manager/)| Support Service | Used to store parameters that will later be shared. | [Documentation](https://docs.aws.amazon.com/general/latest/gr/ssm.html#ssm_region) |
 [AWS Resource Access Manager (RAM)](https://aws.amazon.com/ram/)| Support Service | Used to share parameters among accounts. | [Documentation](https://docs.aws.amazon.com/general/latest/gr/ram.html#ram_region) |
 [Amazon Simple Queue Service (SQS)](https://aws.amazon.com/sqs/)| Support Service | Used to store unprocessed messages for troubleshooting. | [Documentation](https://docs.aws.amazon.com/general/latest/gr/sqs-service.html#ram_region)
-|[AWS Lambda](https://aws.amazon.com/lambda/) | Core service | Lambda Function for event driven processing  | [Documentation](https://docs.aws.amazon.com/lambda/)
-|
+|[AWS Lambda](https://aws.amazon.com/lambda/) | Core service | Lambda Function for event driven processing  | [Documentation](https://docs.aws.amazon.com/lambda/)|
 
 ### Cost 
 
@@ -135,7 +159,7 @@ IPADDR=20.0.0.10
 ### AWS account requirements (If applicable)
 
 *List out pre-requisites required on the AWS account if applicable, this includes enabling AWS regions, requiring ACM certificate.*
-
+<!--
 **Example:** “This deployment requires you have public ACM certificate available in your AWS account”
 
 **Example resources:**
@@ -152,6 +176,15 @@ IPADDR=20.0.0.10
 <If using aws-cdk, include steps for account bootstrap for new cdk users.>
 
 **Example blurb:** “This Guidance uses aws-cdk. If you are using aws-cdk for first time, please perform the below bootstrapping....”
+-->
+
+### Security
+
+When you build systems on AWS infrastructure, security responsibilities are shared between you and AWS. This [shared responsibility model](https://aws.amazon.com/compliance/shared-responsibility-model/) reduces your operational burden because AWS operates, manages, and controls the components including the host operating system, the virtualization layer, and the physical security of the facilities in which the services operate. For more information about AWS security visit [AWS Cloud Security](http://aws.amazon.com/security/).
+
+This guidance relies on many reasonable default options and "principle of least privilege" access for all resources. Users that deploy it in production should go through all the deployed resources and ensure those defaults comply with their security requirements and policies, have adequate logging levels and alarms enabled, and protect access to publicly exposed APIs. IAM roles are defined for Lambda to only access the corresponding resources such as EventBridge, Amazon SQS, and Amazon SNS. AWS RAM securely shares resource parameter such as SQS queue ARN and EventBridge custom event bus ARN. 
+
+**NOTE**: Please note that by cloning and using third party open-source code, you assume responsibility for its patching, securing, and managing in the context of this project.
 
 ### Service limits  (if applicable)
 
@@ -200,7 +233,6 @@ IPADDR=20.0.0.10
 6. Validate the IP `ip addr show eth0`. The additional IP address should be visible.
 
 
-
 ## Deployment Validation
 
 <Provide steps to validate a successful deployment, such as terminal output, verifying that the resource is created, status of the CloudFormation template, etc.>
@@ -236,7 +268,6 @@ Provide suggestions and recommendations about how customers can modify the param
 
 - Include detailed instructions, commands, and console actions to delete the deployed Guidance.
 - If the Guidance requires manual deletion of resources, such as the content of an S3 bucket, please specify.
-
 
 
 ## FAQ, known issues, additional considerations, and limitations (optional)
@@ -283,6 +314,7 @@ See [CONTRIBUTING](CONTRIBUTING.md) for more information.
 *Customers are responsible for making their own independent assessment of the information in this Guidance. This Guidance: (a) is for informational purposes only, (b) represents AWS current product offerings and practices, which are subject to change without notice, and (c) does not create any commitments or assurances from AWS and its affiliates, suppliers or licensors. AWS products or services are provided “as is” without warranties, representations, or conditions of any kind, whether express or implied. AWS responsibilities and liabilities to its customers are controlled by AWS agreements, and this Guidance is not part of, nor does it modify, any agreement between AWS and its customers.*
 
 
-## Authors (optional)
+## Authors
 
-Name of code contributors
+Daniel Zilberman, Sr SA AWS Tech Solutions <br/>
+Michal Kolodziej, Sr. WW Specialist SA Networking
