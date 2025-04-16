@@ -11,10 +11,10 @@ This guidance demonstrates how to configure and automatically manage private, fl
 3. [Prerequisites](#prerequisites)
     - [Operating System](#operating-system)
 4. [Deployment Steps](#deployment-steps)
-5. [Deployment Validation](#deployment-validation-required)
-6. [Running the Guidance](#running-the-guidance-required)
+5. [Deployment Validation](#deployment-validation)
+6. [Running the Guidance](#running-the-guidance)
 7. [Next Steps](#next-steps-required)
-8. [Cleanup](#cleanup-required)
+8. [Cleanup](#cleanup)
 
 ***Optional***
 
@@ -31,7 +31,7 @@ Floating (or virtual) IP provides a solution to have one fixed IP and dynamicall
 
 ### Use cases
 
-**TO DO - add specific use case descriptions here**
+**TO DO - add specific use case description here**
 
 ### Architecture
 
@@ -40,7 +40,7 @@ Below is the reference architecture of this guidance showing AWS services deploy
 The VPCs, subnets and the target EC2 Instances, representing business application, could be pre-existing ones or can be deployed as part of this guidance. For more information, please refer to the [Deployment Steps](#deployment-steps) below. 
 
 ![img](assets/floating_ip_reference_architecture.jpg)
-**Figure 1. Reference Architecture for Guidance for using Floating/virtual fixed IP on AWS** 
+**Figure 1. Reference Architecture for Floating/virtual fixed IP address with Load Balancing on AWS ** 
 
 ### AWS Services used in this Guidance
 
@@ -51,6 +51,8 @@ The VPCs, subnets and the target EC2 Instances, representing business applicatio
 [AWS Systems Manager](https://aws.amazon.com/systems-manager/)| Support Service | Used to store parameters that will later be shared. | [Documentation](https://docs.aws.amazon.com/general/latest/gr/ssm.html#ssm_region) |
 [AWS Resource Access Manager (RAM)](https://aws.amazon.com/ram/)| Support Service | Used to share parameters among accounts. | [Documentation](https://docs.aws.amazon.com/general/latest/gr/ram.html#ram_region) |
 [Amazon Simple Queue Service (SQS)](https://aws.amazon.com/sqs/)| Support Service | Used to store unprocessed messages for troubleshooting. | [Documentation](https://docs.aws.amazon.com/general/latest/gr/sqs-service.html#ram_region)
+|[AWS Lambda](https://aws.amazon.com/lambda/) | Core service | Lambda Function for event driven processing  | [Documentation](https://docs.aws.amazon.com/general/latest/lambda)
+|
 
 ### Cost 
 
@@ -99,9 +101,6 @@ Bellow are the pricing references for each AWS Service used in this Guidance.
 ### Operating System
 
 This Guidance uses [AWS Serverless](https://aws.amazon.com/serverless/) managed services, so there's no OS patching or management.
-
-
-## Prerequisites
 
 ### Network
 - VPC with Internet access or VPC Endpoints to Cloudwatch and monitoring. Endpoints can be accessed by probing and Failover Lambda functions.
@@ -173,7 +172,7 @@ Deployment steps must be numbered, comprehensive, and usable to customers at any
 * If applicable, provide instructions to create the Python virtual environment, and installing the packages using ```requirement.txt```.
 * If applicable, provide instructions to capture the deployed resource ARN or ID using the CLI command (recommended), or console action.
 
- 
+<!-- 
 **Example:**
 
 1. Clone the repo using command ```git clone xxxxxxxxxx```
@@ -182,10 +181,27 @@ Deployment steps must be numbered, comprehensive, and usable to customers at any
 4. Edit content of **file-name** and replace **s3-bucket** with the bucket name in your account.
 5. Run this command to deploy the stack ```cdk deploy``` 
 6. Capture the domain name created by running this CLI command ```aws apigateway ............```
+-->
+
+Deployment Steps are below:
+
+1. Navigate to /etc/sysconfig/network-scripts/
+2. Create new file called `eth0:0` for eth0 ENI(Elastic Network Interface)
+3. Copy and paste the content of the [example  file](deployment/vpc/eth0:0)
+```bash
+DEVICE=eth0:0
+BOOTPROTO=static
+ONBOOT=yes
+PREFIX=32
+IPADDR=20.0.0.10
+```
+4. Change the IP address `IPADDR` to the desired floating IP(here 20.0.0.10)
+5. Restart the networking service:  `service network restart`
+6. Validate the IP `ip addr show eth0`. The additional IP address should be visible.
 
 
 
-## Deployment Validation  (required)
+## Deployment Validation
 
 <Provide steps to validate a successful deployment, such as terminal output, verifying that the resource is created, status of the CloudFormation template, etc.>
 
@@ -211,12 +227,12 @@ This section should include:
 
 
 
-## Next Steps (required)
+## Next Steps
 
 Provide suggestions and recommendations about how customers can modify the parameters and the components of the Guidance to further enhance it according to their requirements.
 
 
-## Cleanup (required)
+## Cleanup
 
 - Include detailed instructions, commands, and console actions to delete the deployed Guidance.
 - If the Guidance requires manual deletion of resources, such as the content of an S3 bucket, please specify.
