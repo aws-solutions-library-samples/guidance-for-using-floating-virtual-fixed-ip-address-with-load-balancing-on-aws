@@ -107,8 +107,9 @@ The following table provides a sample cost breakdown for deploying this Guidance
 | Amazon SQS          | <= 1 million requests/month | \$ 0.00 |
 | **TOTAL estimate** |  | **\$ 1.00/month** |
 
-Please see price breakdown details in this [AWS calculator](https://calculator.aws/#/estimate?id=6ee067550372e1563469fded6e9f69d665113897)
+Please see price breakdown details in this [AWS calculator](https://calculator.aws/#)
 
+<!--
 **Pricing by AWS Service**
 
 Bellow are the pricing references for each AWS Service used in this Guidance.
@@ -119,6 +120,7 @@ Bellow are the pricing references for each AWS Service used in this Guidance.
 [AWS Step Functions](https://aws.amazon.com/step-functions/)|  [Documentation](https://aws.amazon.com/step-functions/pricing/) |
 [AWS Systems Manager](https://aws.amazon.com/systems-manager/)|  [Documentation](https://aws.amazon.com/systems-manager/pricing/) |
 [Amazon Simple Queue Service (SQS)](https://aws.amazon.com/sqs/)| [Documentation](https://aws.amazon.com/sqs/pricing/)
+-->
 
 ## Prerequisites
 
