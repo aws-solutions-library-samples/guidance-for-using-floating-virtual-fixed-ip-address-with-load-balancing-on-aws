@@ -40,7 +40,7 @@ Below is the reference architecture of this guidance showing AWS services deploy
 The VPCs, subnets and the target EC2 Instances, representing business application, could be pre-existing ones or can be deployed as part of this guidance. For more information, please refer to the [Deployment Steps](#deployment-steps) below. 
 
 ![img](assets/floating-ip-reference-architecture_v2.jpg)
-**Figure 1. Reference Architecture for Floating/virtual fixed IP address with Load Balancing on AWS ** 
+**Figure 1. Reference Architecture for Floating/virtual fixed IP address with Load Balancing on AWS** 
 
 **Architecture Workflow**
 
