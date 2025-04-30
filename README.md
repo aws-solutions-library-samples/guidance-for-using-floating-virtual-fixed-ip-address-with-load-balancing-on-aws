@@ -30,8 +30,8 @@ There are situations when there is a technical requirement for a static, single 
 Floating (or virtual) IP provides a solution to have one fixed IP and dynamically change target providing e.g. failover capabilities
 
 ### Use cases
-
-**TO DO - add specific use case description here**
+Primary Use Case for this guidance is a situation when an application or its technical components, require static IP address for communication spanning multiple AZs and/or hybrid environments. 
+If possible, consider using native services available in AWS before implementing this guidance. Those include Amazon Elastic Load Balancers and Amazon Route53 or Amazon Global Accelerator. Managed services provide high quality functionality without operational overhead required from you and should be prioritized before deploying custom code.
 
 ### Architecture
 
@@ -126,16 +126,16 @@ Bellow are the pricing references for each AWS Service used in this Guidance.
 
 ### Operating System
 
-This Guidance uses [AWS Serverless](https://aws.amazon.com/serverless/) managed services, so there's no OS patching or management.
+This Guidance uses [AWS Serverless](https://aws.amazon.com/serverless/) managed services, so there's no OS patching or management required.
 
 ### Network
-- VPC with Internet access or VPC Endpoints to Cloudwatch and monitoring. Endpoints can be accessed by probing and Failover Lambda functions.
+- VPC where the guidance is deployed has Internet access or VPC Endpoints to Cloudwatch and monitoring. Endpoints can be accessed by probing and Failover Lambda functions.
 - Target instances should have security groups configured in a way, that the probing lambda can access them(e.g. source and port are open for the Lambda's ENI)
 
-By deploying the VpcStack, which is an optional part of this guidance, the prerequisites can be deployed as well.
+By deploying the VpcStack, which is an optional [part one](#deploy-part-one-basic-infrastructure) of this guidance, the prerequisites can be deployed as well.
 
 ### Operating System
-This guidance requires, that the floating-ip is known to the operating system and configured for the network adapter. By default, AMIs like for AL2(Amazon Linux 2), configure only the IP addresses privided during instantiation of the instance. 
+This guidance requires, that the floating-ip is known to the operating system and configured for the network adapter on the target instances. By default, AMIs for AL2(Amazon Linux 2), configure only the IP addresses provided during instantiation of the instance. 
 
 **Example:**
 These deployment instructions are optimized to best work on **<Amazon Linux 2 AMI>**.  Deployment in another OS may require additional steps. To configure the floating IP address on existing AL2 instance follow the steps. You might need root permissions:
@@ -159,6 +159,8 @@ IPADDR=20.0.0.10
 
 
 ### AWS account requirements (If applicable)
+
+This deployment requires that the CDK is installed and configured in AWS Account.
 
 *List out pre-requisites required on the AWS account if applicable, this includes enabling AWS regions, requiring ACM certificate.*
 <!--
@@ -199,53 +201,34 @@ This guidance relies on many reasonable default options and "principle of least 
 
 ## Deployment Steps
 
-Deployment steps must be numbered, comprehensive, and usable to customers at any level of AWS expertise. The steps must include the precise commands to run, and describe the action it performs.
+Deployment of this guidence is split into two parts of which both or just the second one might be applicable for the use case.
+The first part comprises of basic infrastructure, handy if one just want to deploy and test the guidance in an test environment. It consis of networking with VPC, subnets and corresponding route tables, as well as EC2 instances, mimics the client and target applications. 
+The second part is the actual guidance. Depending on the use case, both or just the second part can be deployed. If there is a basic infrastructure aready in place, and the clients/target application are deployed and available then only the second part needs to be deployed.
 
-* All steps must be numbered.
-* If the step requires manual actions from the AWS console, include a screenshot if possible.
-* The steps must start with the following command to clone the repo. ```git clone xxxxxxx```
-* If applicable, provide instructions to create the Python virtual environment, and installing the packages using ```requirement.txt```.
-* If applicable, provide instructions to capture the deployed resource ARN or ID using the CLI command (recommended), or console action.
+### Prepare the client machine:
+1. Install AWS CLI and configure it. See the [documentation](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-quickstart.html) for further informations. The commandes assume, the default profile is used. 
+2. Install AWS CDK. See the [documentation](https://docs.aws.amazon.com/cdk/v2/guide/getting-started.html).
+3. Install TypeScript. See [documentation](https://www.typescriptlang.org/download/) for further information.
+4. Clone the repo of the guidance using command ```git clone https://github.com/aws-solutions-library-samples/guidance-for-using-floating-virtual-fixed-ip-address-with-load-balancing-on-aws.git```. 
+5. cd into the cloned repository ```cd guidance-for-using-floating-virtual-fixed-ip-address-with-load-balancing-on-aws```
+6. Download the node dependencies using command ```npm install```.
+7. Compile TypeScript code and watch for watches using command ```tcs```.
 
-<!-- 
-**Example:**
+### Install the basic infrastructure (if not available):
+8. Deploy part one (basic infrastructure) using command ```cdk deploy VpcStack --require-approval never --method=direct```. Wait until the deployment finishes. It should take about 3-4 minutes. At the end of deployment, Outputs are shown.
+9. Execute the helper script with command ```sh prepare-cdk-json.sh default``` to automatically prepare ```cdk.json```, based on the instracture deplolyed in previous step. the ```cdk.json```can be prepared manually. Look for the Output from previous step, and replace placeholders ```ENTER-VALUE``` in the file with appropriate values.
 
-1. Clone the repo using command ```git clone xxxxxxxxxx```
-2. cd to the repo folder ```cd <repo-name>```
-3. Install packages in requirements using command ```pip install requirement.txt```
-4. Edit content of **file-name** and replace **s3-bucket** with the bucket name in your account.
-5. Run this command to deploy the stack ```cdk deploy``` 
-6. Capture the domain name created by running this CLI command ```aws apigateway ............```
--->
-
-Deployment Steps are below:
-
-1. Navigate to /etc/sysconfig/network-scripts/
-2. Create new file called `eth0:0` for eth0 ENI(Elastic Network Interface)
-3. Copy and paste the content of the [example  file](deployment/vpc/eth0:0)
-```bash
-DEVICE=eth0:0
-BOOTPROTO=static
-ONBOOT=yes
-PREFIX=32
-IPADDR=20.0.0.10
-```
-4. Change the IP address `IPADDR` to the desired floating IP(here 20.0.0.10)
-5. Restart the networking service:  `service network restart`
-6. Validate the IP `ip addr show eth0`. The additional IP address should be visible.
-
+### Deploy part two (the guidance itself):
+10. Configure ```cdk.json```. Replace ```ENTER-VALUE``` placeholders with real values. Those values come from preexisting infrastructure. If the part one(basic infrastructure) of this deployment was executed, the file is already prepared and ready to be used.
+11. Deploy this guidance using command ```cdk deploy ApplicationStack --require-approval never --method=direct```. It should take about 4-5 minutes. 
 
 ## Deployment Validation
-
-<Provide steps to validate a successful deployment, such as terminal output, verifying that the resource is created, status of the CloudFormation template, etc.>
-
-
-**Examples:**
-
-* Open CloudFormation console and verify the status of the template with the name starting with xxxxxx.
-* If deployment is successful, you should see an active database instance with the name starting with <xxxxx> in        the RDS console.
-*  Run the following CLI command to validate the deployment: ```aws cloudformation describe xxxxxxxxxxxxx```
-
+After the deployment is successfuly done, it can be validated. It can be validated either in AWS Console or via AWS CLI. Here we'll show ho to do it in AWS Console:
+1. Log into the AWS Account
+2. Open [CloudFormation console](https://console.aws.amazon.com/cloudformation/) and verify the status of the Stack with the name ```ApplictationStack```. It should be green and have Status ```CREATE_COMPLETE```
+3. Open [StepFunctions console](https://console.aws.amazon.com/states), look for state machine calle ```FloatingIP-StateMachine``` and open it. There should be some executions alredy in Status either ```Succeeded``` or still ```Running```.
+4. Open [VPC route tables console](http://console.aws.amazon.com/vpcconsole/home?#RouteTables), look for one of the route tables belonging to client subnets(client_subnet_ids from ```cdk.json``` file). There should be a route, where the IP(floating_ip from ```cdk.json``` file) targets an ENI (target_eni_primary from ```cdk.json``` file).
+If the part one was deployed, there should be route for IP ```20.0.0.1```
 
 
 ## Running the Guidance
@@ -259,18 +242,11 @@ This section should include:
 * Expected output (provide screenshot if possible)
 * Output description
 
-
-
-## Next Steps
-
-Provide suggestions and recommendations about how customers can modify the parameters and the components of the Guidance to further enhance it according to their requirements.
-
-
 ## Cleanup
-
-- Include detailed instructions, commands, and console actions to delete the deployed Guidance.
-- If the Guidance requires manual deletion of resources, such as the content of an S3 bucket, please specify.
-
+To remove the guidance and the basic infrastrcture follow the steps:
+1. Remove the ApplicationStack using command ```cdk destroy ApplicationStack```. Confirm the removal of the stack. 
+2. Remove the VpcStack using command ```cdk destroy VpcStack```. Confirm the removal of the stack. This is needed if the VpcStack was deployed as part of this guidance. 
+3. Ensure that the Stacks were destroyed successfully. Navidate to [CloudFormation console](https://console.aws.amazon.com/cloudformation/) and verify that there is no Stacs named ```VpcStack``` and ```ApplicationStack```
 
 ## FAQ, known issues, additional considerations, and limitations (optional)
 
