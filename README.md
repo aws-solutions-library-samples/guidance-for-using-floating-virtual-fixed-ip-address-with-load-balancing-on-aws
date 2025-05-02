@@ -15,13 +15,8 @@ This guidance demonstrates how to configure and automatically manage private, fl
 6. [Running the Guidance](#running-the-guidance)
 7. [Next Steps](#next-steps)
 8. [Cleanup](#cleanup)
-
-***Optional***
-
-8. [FAQ, known issues, additional considerations, and limitations](#faq-known-issues-additional-considerations-and-limitations-optional)
-9. [Revisions](#revisions-optional)
-10. [Notices](#notices-optional)
-11. [Authors](#authors-optional)
+9. [Notices](#notices)
+10. [Authors](#authors)
 
 ## Overview
 
@@ -29,9 +24,10 @@ There are situations when there is a technical requirement for a static, single 
 
 Floating (or virtual) IP provides a solution to have one fixed IP and dynamically change target providing e.g. failover capabilities
 
-### Use cases
-Primary Use Case for this guidance is a situation when an application or its technical components, require static IP address for communication spanning multiple AZs and/or hybrid environments. 
-If possible, consider using native services available in AWS before implementing this guidance. Those include Amazon Elastic Load Balancers and Amazon Route53 or Amazon Global Accelerator. Managed services provide high quality functionality without operational overhead required from you and should be prioritized before deploying custom code.
+### Use Cases
+
+Primary Use Case for this guidance is a situation when an application or its architetcural components require static IP address for communication spanning multiple AWS AZs and/or hybrid environments. 
+If possible, consider using AWS native services availablex before implementing this guidance such as: Amazon Elastic Load Balancers and Amazon Route53 or Amazon Global Accelerator. AWS managed services provide high quality functionality without operational overhead required from you and should be prioritized before deploying custom code.
 
 ### Architecture
 
@@ -58,15 +54,6 @@ The VPCs, subnets and the target EC2 Instances, representing business applicatio
 11. All metrics in Amazon CloudWatch could be used to build monitoring dashboards or set alarms in CloudWatch.
 
 
- 
-
-
-
-
-
- 
-
-
 ### AWS Services used in this Guidance
 
 | **AWS service**  | Role | Description | Service Availability |
@@ -86,7 +73,8 @@ We recommend creating a [budget](https://docs.aws.amazon.com/cost-management/la
 
 **Estimated monthly cost breakdown - Networking Account**
 
-This breakdown of the costs of the Networking Account shows that the highest cost of the implementation is the [Advanced Parameter Storage](https://docs.aws.amazon.com/systems-manager/latest/userguide/parameter-store-advanced-parameters.html) resource from AWS Systems Manager service. The costs are estimated for US East 1 (Virginia) `us-east-1` region for one month.
+This breakdown of the costs of the Networking Account shows that the highest cost of the implementation is the [Advanced Parameter Storage](https://docs.aws.amazon.com/systems-manager/latest/userguide/parameter-store-advanced-parameters.html) resource from [AWS Systems Manager](https://aws.amazon.com/systems-manager/) service. 
+The costs are estimated for US East 1 (Virginia) `us-east-1` region for one month.
 
 | **AWS service**  | Dimensions | Cost, month \[USD\] |
 |-----------|------------|------------|
@@ -98,7 +86,7 @@ This breakdown of the costs of the Networking Account shows that the highest cos
 
 **Estimated monthly cost breakdown - Spoke Accounts**
 
-The following table provides a sample cost breakdown for deploying this Guidance in 1,000 different spoke Accounts which are likely to provide a VPC Lattice service in the future. The costs are estimated in the Ireland `eu-west-1` region for one month.
+The following table provides a sample cost breakdown for deploying this Guidance in 1,000 different spoke Accounts (which are likely to provide a VPC Lattice service in the future). The costs are estimated in the Ireland `eu-west-1` region for one month.
 
 | **AWS service**  | Dimensions | Cost, month \[USD\] |
 |-----------|------------|------------|
@@ -142,7 +130,7 @@ These deployment instructions are optimized to best work on **<Amazon Linux 2 AM
 1. Navigate to /etc/sysconfig/network-scripts/
 2. Create new file called `eth0:0` for eth0 ENI(Elastic Network Interface)
 3. Copy and paste the content of the [example  file](deployment/vpc/eth0:0)
-```
+```bash
 DEVICE=eth0:0
 BOOTPROTO=static
 ONBOOT=yes
@@ -176,9 +164,7 @@ This deployment requires that the CDK is installed and configured in AWS Account
 
 
 ### aws cdk bootstrap (if sample code has aws-cdk)
-
 <If using aws-cdk, include steps for account bootstrap for new cdk users.>
-
 **Example blurb:** “This Guidance uses aws-cdk. If you are using aws-cdk for first time, please perform the below bootstrapping....”
 -->
 
@@ -190,45 +176,68 @@ This guidance relies on many reasonable default options and "principle of least 
 
 **NOTE**: Please note that by cloning and using third party open-source code, you assume responsibility for its patching, securing, and managing in the context of this project.
 
-### Service limits  (if applicable)
-
-<Talk about any critical service limits that affect the regular functioning of the Guidance. If the Guidance requires service limit increase, include the service name, limit name and link to the service quotas page.>
 
 ### Supported Regions (if applicable)
 
-<If the Guidance is built for specific AWS Regions, or if the services used in the Guidance do not support all Regions, please specify the Region this Guidance is best suited for>
-
+<!-- If the Guidance is built for specific AWS Regions, or if the services used in the Guidance do not support all Regions, please specify the Region this Guidance is best suited for -->
 
 ## Deployment Steps
 
-Deployment of this guidence is split into two parts of which both or just the second one might be applicable for the use case.
-The first part comprises of basic infrastructure, handy if one just want to deploy and test the guidance in an test environment. It consis of networking with VPC, subnets and corresponding route tables, as well as EC2 instances, mimics the client and target applications. 
-The second part is the actual guidance. Depending on the use case, both or just the second part can be deployed. If there is a basic infrastructure aready in place, and the clients/target application are deployed and available then only the second part needs to be deployed.
+Deployment of this guidence is split into two parts of which both or just the second one might be applicable for your use case:
+- The first part comprises of basic infrastructure, handy if you just want to deploy and test the guidance in an test environment. It consists of networking with VPC, subnets and corresponding route tables, as well as EC2 instances, mimics the client and target applications. 
+- The second part is the actual guidance. Depending on your use case, both or just this part can be deployed. If there is a basic infrastructure aready in place, and the clients/target application are deployed and available, then only this part needs to be deployed.
 
 ### Prepare the client machine:
 1. Install AWS CLI and configure it. See the [documentation](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-quickstart.html) for further informations. The commandes assume, the default profile is used. 
 2. Install AWS CDK. See the [documentation](https://docs.aws.amazon.com/cdk/v2/guide/getting-started.html).
 3. Install TypeScript. See [documentation](https://www.typescriptlang.org/download/) for further information.
-4. Clone the repo of the guidance using command ```git clone https://github.com/aws-solutions-library-samples/guidance-for-using-floating-virtual-fixed-ip-address-with-load-balancing-on-aws.git```. 
-5. cd into the cloned repository ```cd guidance-for-using-floating-virtual-fixed-ip-address-with-load-balancing-on-aws```
-6. Download the node dependencies using command ```npm install```.
-7. Compile TypeScript code and watch for watches using command ```tcs```.
+4. Clone the repo of the guidance using command 
+```bash
+git clone https://github.com/aws-solutions-library-samples/guidance-for-using-floating-virtual-fixed-ip-address-with-load-balancing-on-aws.git
+``` 
+5. Navigate into the cloned repository:
+```bash
+cd guidance-for-using-floating-virtual-fixed-ip-address-with-load-balancing-on-aws
+```
+6. Download the node dependencies using command:
+```bash
+npm install
+```
+7. Compile TypeScript code and watch for watches using command:
+```bash
+tcs
+```
 
-### Install the basic infrastructure (if not available):
-8. Deploy part one (basic infrastructure) using command ```cdk deploy VpcStack --require-approval never --method=direct```. Wait until the deployment finishes. It should take about 3-4 minutes. At the end of deployment, Outputs are shown.
-9. Execute the helper script with command ```sh prepare-cdk-json.sh default``` to automatically prepare ```cdk.json```, based on the instracture deplolyed in previous step. the ```cdk.json```can be prepared manually. Look for the Output from previous step, and replace placeholders ```ENTER-VALUE``` in the file with appropriate values.
+### (Part 1) Install the basic infrastructure (if not available):
+8. Deploy part one (basic infrastructure) using command:
+ ```bash
+cdk deploy VpcStack --require-approval never --method=direct
+```
+ Wait until the deployment finishes. It should take about 3-4 minutes. At the end of deployment, outputs are shown.
+9. Execute the helper script with command:
+```bash
+sh prepare-cdk-json.sh default
+``` 
+to automatically prepare for `cdk.json` based on the instracture deployed in previous step. 
+The contents of `cdk.json` can be prepared manually: Look for the Output from previous step, and replace placeholders `ENTER-VALUE` in the file with appropriate values from that ouput.
 
-### Deploy part two (the guidance itself):
-10. Configure ```cdk.json```. Replace ```ENTER-VALUE``` placeholders with real values. Those values come from preexisting infrastructure. If the part one(basic infrastructure) of this deployment was executed, the file is already prepared and ready to be used.
-11. Deploy this guidance using command ```cdk deploy ApplicationStack --require-approval never --method=direct```. It should take about 4-5 minutes. 
+### (Part 2) Deploy the guidance:
+
+10. Configure `cdk.json`. Replace `ENTER-VALUE` placeholders with real values. Those values come from preexisting infrastructure. If the part one(basic infrastructure) of this deployment was executed, the file is already prepared and ready to be used.
+11. Deploy this guidance using command:
+```bash
+cdk deploy ApplicationStack --require-approval never --method=direct
+```
+It should take about 4-5 minutes to complete
 
 ## Deployment Validation
-After the deployment is successfuly done, it can be validated. It can be validated either in AWS Console or via AWS CLI. Here we'll show ho to do it in AWS Console:
+After the guidance deployment is completed, it can be validated either in AWS Console or via AWS CLI. 
+Below are instructions on how to validate deployment via AWS Console:
 1. Log into the AWS Account
-2. Open [CloudFormation console](https://console.aws.amazon.com/cloudformation/) and verify the status of the Stack with the name ```ApplictationStack```. It should be green and have Status ```CREATE_COMPLETE```
-3. Open [StepFunctions console](https://console.aws.amazon.com/states), look for state machine calle ```FloatingIP-StateMachine``` and open it. There should be some executions alredy in Status either ```Succeeded``` or still ```Running```.
-4. Open [VPC route tables console](http://console.aws.amazon.com/vpcconsole/home?#RouteTables), look for one of the route tables belonging to client subnets(client_subnet_ids from ```cdk.json``` file). There should be a route, where the IP(floating_ip from ```cdk.json``` file) targets an ENI (target_eni_primary from ```cdk.json``` file).
-If the part one was deployed, there should be route for IP ```20.0.0.1```
+2. Open [CloudFormation console](https://console.aws.amazon.com/cloudformation/) and verify the status of the Stack with the name `ApplictationStack`. It should be green and have Status `CREATE_COMPLETE`
+3. Open [StepFunctions console](https://console.aws.amazon.com/states), look for state machine called `FloatingIP-StateMachine` and open it. There should be some executions alredy in Status either `Succeeded` or still `Running`.
+4. Open [VPC route tables console](http://console.aws.amazon.com/vpcconsole/home?#RouteTables), look for one of the Route tables belonging to client subnets(client_subnet_ids from `cdk.json` file). There should be a route, where the IP(`floating_ip` value from `cdk.json` file) targets an ENI (`target_eni_primary` from `cdk.json` file).
+If the Part one (see above) was deployed, there should be route for `IP = 20.0.0.1`
 
 
 ## Running the Guidance
@@ -243,10 +252,18 @@ This section should include:
 * Output description
 
 ## Cleanup
-To remove the guidance and the basic infrastrcture follow the steps:
-1. Remove the ApplicationStack using command ```cdk destroy ApplicationStack```. Confirm the removal of the stack. 
-2. Remove the VpcStack using command ```cdk destroy VpcStack```. Confirm the removal of the stack. This is needed if the VpcStack was deployed as part of this guidance. 
-3. Ensure that the Stacks were destroyed successfully. Navidate to [CloudFormation console](https://console.aws.amazon.com/cloudformation/) and verify that there is no Stacs named ```VpcStack``` and ```ApplicationStack```
+To remove the guidance and the related AWS infrastructure follow the steps below:
+1. Remove the ApplicationStack using command:
+ ```bash
+cdk destroy ApplicationStack
+``` 
+Confirm the removal of the ApplicationStack. 
+2. Remove the VpcStack using command:
+```bash
+cdk destroy VpcStack
+```
+ Confirm the removal of the stack. This is needed if the `VpcStack` was deployed as part of this guidance. 
+3. Ensure that the Stacks were destroyed successfully. Navidate to [CloudFormation console](https://console.aws.amazon.com/cloudformation/) and verify that there is no Stacks named `VpcStack` or `ApplicationStack`
 
 ## FAQ, known issues, additional considerations, and limitations (optional)
 
@@ -258,25 +275,6 @@ To remove the guidance and the basic infrastrcture follow the steps:
 
 **Additional considerations (if applicable)**
 
-<Include considerations the customer must know while using the Guidance, such as anti-patterns, or billing considerations.>
-
-**Examples:**
-
-- “This Guidance creates a public AWS bucket required for the use-case.”
-- “This Guidance created an Amazon SageMaker notebook that is billed per hour irrespective of usage.”
-- “This Guidance creates unauthenticated public API endpoints.”
-
-
-Provide a link to the *GitHub issues page* for users to provide feedback.
-
-
-**Example:** *“For any feedback, questions, or suggestions, please use the issues tab under this repo.”*
-
-## Revisions (optional)
-
-Document all notable changes to this project.
-
-Consider formatting this section based on Keep a Changelog, and adhering to Semantic Versioning.
 
 ## License
 
