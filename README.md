@@ -13,16 +13,15 @@ This guidance demonstrates how to configure and automatically manage private, fl
 4. [Deployment Steps](#deployment-steps)
 5. [Deployment Validation](#deployment-validation)
 6. [Running the Guidance](#running-the-guidance)
-7. [Next Steps](#next-steps)
-8. [Cleanup](#cleanup)
-9. [Notices](#notices)
-10. [Authors](#authors)
+7. [Cleanup](#cleanup)
+8. [Notices](#notices)
+9. [Authors](#authors)
 
 ## Overview
 
-There are situations when there is a technical requirement for a static, single IP address to reach an IT system from within the private network. Even though, each instance living in the network, like EC2, RDS, or FSx has its own, unique IP address, it gets challenging when high availability with Multi-AZ deployment is also required and no DNS can be used. In this situation, Multi-AZ Network Load Balancer deployment, which provides multiple static IP addresses distributed across multiple AZs and single DNS, is not an option. 
+There are situations when there is a technical requirement for a static, single IP address to access an IT system from within the private network. Even though, each instance living in the network, like EC2, RDS, or FSx has its own, unique IP address, it gets challenging when high availability with Multi-AZ deployment is also required and no DNS based solution can be used. In this situation, Multi-AZ Network Load Balancer deployment, which provides multiple static IP addresses distributed across multiple AZs and single DNS, is not an option. 
 
-Floating (or virtual) IP provides a solution to have one fixed IP and dynamically change target providing e.g. failover capabilities
+Floating (or virtual) IP provides a solution to have one fixed IP and dynamically change target thus providing failover and other capabilities for those use cases.
 
 ### Use Cases
 
@@ -40,13 +39,13 @@ The VPCs, subnets and the target EC2 Instances, representing business applicatio
 
 **Architecture Workflow**
 
-0. The client application (e.g. running on [Amazon EC2](https://aws.amazon.com/pm/ec2/) ) connects to the target cloud resource through floating-IP. It represents the business application.
+0. The client application (e.g. running on [Amazon EC2](https://aws.amazon.com/pm/ec2/) ) connects to the target AWS Cloud resource through floating-IP. It represents the business application.
 1. [Amazon EventBridge](https://aws.amazon.com/eventbridge/) Scheduler invokes every minute the [AWS Step Functions](https://aws.amazon.com/step-functions/) flow which orchestrates the health checks and failover process of floating-IP, if needed.. 
-2. AWS Step Functions flow execution iterates over set of steps every N seconds, where N is configurable. One execution runs up to a minute.
+2. AWS Step Functions flow execution iterates over set of steps every N seconds, where N is configurable, its execution runs up to one minute.
 3. As an initial step, the context (probing counter and last probing result) from previous Step Function execution is retrieved from [Amazon DynamoDB](https://aws.amazon.com/pm/dynamodb/).
 4. AWS Lambda probing function is invoked. The context from previous execution is passed as its input.
 5. The probing AWS Lambda function checks the health of the target of the floating-IP, returns the probing result back to AWS Step Functions execution. In case of failed health check, it increases the count of failed health checks by one and sets the probing result to ”failed”. 
-6. The probing function logs metrics like response time and failed probes in [Amazon CloudWatch](https://aws.amazon.com/cloudwatch/) Metrics
+6. The probing Lambda function logs metrics like response time and failed probes in [Amazon CloudWatch](https://aws.amazon.com/cloudwatch/) Metrics
 7. If the threshold of failed health checks is reached, the failover procedure is initialized by Step Functions flow. The failover  AWS Lambda function is invoked to execute the procedure.
 8. The failover AWS Lambda function manipulates one or more Route Tables, and changes the target ENI (Elastic Network Interface) of the route associated with the floating-IP to the one in "secondary" subnet
 9. The failover function logs failover count metrics in Amazon CloudWatch Metrics.
@@ -67,7 +66,7 @@ The VPCs, subnets and the target EC2 Instances, representing business applicatio
 
 ### Cost 
 
-You are responsible for the cost of the AWS services deployed while running this guidance. As of November 2024, the cost of running this Guidance with default settings lies within the Free Tier, except for the use of AWS Systems Manager Advanced Paramter storage.
+You are responsible for the cost of the AWS services deployed while running this guidance. As of May 2025, the cost of running this Guidance with default settings lies within the Free Tier, except for the use of AWS Systems Manager Advanced Paramter storage.
 
 We recommend creating a [budget](https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-create.html) through [AWS Cost Explorer](http://aws.amazon.com/aws-cost-management/aws-cost-explorer/) to help manage costs. Prices are subject to change. You can also estimate the cost for your architecture solution using [AWS Pricing Calculator](https://calculator.aws/#/). For full details, refer to the pricing webpage for each AWS service used in this Guidance or visit [Pricing by AWS Service](#pricing-by-aws-service).
 
@@ -97,18 +96,6 @@ The following table provides a sample cost breakdown for deploying this Guidance
 
 Please see price breakdown details in this [AWS calculator](https://calculator.aws/#)
 
-<!--
-**Pricing by AWS Service**
-
-Bellow are the pricing references for each AWS Service used in this Guidance.
-
-| **AWS service**  |  Pricing  |
-|-----------|---------------|
-|[Amazon EventBridge](https://aws.amazon.com/eventbridge/)| [Documentation](https://aws.amazon.com/eventbridge/pricing/) |
-[AWS Step Functions](https://aws.amazon.com/step-functions/)|  [Documentation](https://aws.amazon.com/step-functions/pricing/) |
-[AWS Systems Manager](https://aws.amazon.com/systems-manager/)|  [Documentation](https://aws.amazon.com/systems-manager/pricing/) |
-[Amazon Simple Queue Service (SQS)](https://aws.amazon.com/sqs/)| [Documentation](https://aws.amazon.com/sqs/pricing/)
--->
 
 ## Prerequisites
 
@@ -117,10 +104,10 @@ Bellow are the pricing references for each AWS Service used in this Guidance.
 This Guidance uses [AWS Serverless](https://aws.amazon.com/serverless/) managed services, so there's no OS patching or management required.
 
 ### Network
-- VPC where the guidance is deployed has Internet access or VPC Endpoints to Cloudwatch and monitoring. Endpoints can be accessed by probing and Failover Lambda functions.
+- VPC where the guidance infrastructure is deployed has Internet access or VPC Endpoints to Cloudwatch and monitoring. Endpoints can be accessed by probing and Failover Lambda functions.
 - Target instances should have security groups configured in a way, that the probing lambda can access them(e.g. source and port are open for the Lambda's ENI)
 
-By deploying the VpcStack, which is an optional [part one](#deploy-part-one-basic-infrastructure) of this guidance, the prerequisites can be deployed as well.
+By deploying the `VpcStack`, which is an optional [part one](#deploy-part-one-basic-infrastructure) of this guidance, the prerequisites can be deployed as well.
 
 ### Operating System
 This guidance requires, that the floating-ip is known to the operating system and configured for the network adapter on the target instances. By default, AMIs for AL2(Amazon Linux 2), configure only the IP addresses provided during instantiation of the instance. 
@@ -202,7 +189,7 @@ Multi Account Outposts Operations Guide is supported in the following AWS Region
 ## Deployment Steps
 
 Deployment of this guidence is split into two parts of which both or just the second one might be applicable for your use case:
-- The first part comprises of basic infrastructure, handy if you just want to deploy and test the guidance in an test environment. It consists of networking with VPC, subnets and corresponding route tables, as well as EC2 instances, mimics the client and target applications. 
+- The first part comprises of basic AWS infrastructure, applicable if you just want to deploy and test the guidance in your test AWS environment. It deploys networking with VPC, subnets and corresponding route tables as well as EC2 instances and mimics the client and target applications. 
 - The second part is the actual guidance. Depending on your use case, both or just this part can be deployed. If there is a basic infrastructure aready in place, and the clients/target application are deployed and available, then only this part needs to be deployed.
 
 ### Prepare the client machine:
@@ -226,7 +213,7 @@ npm install
 tcs
 ```
 
-### (Part 1) Install the basic infrastructure (if not available):
+### (Part 1) Deploy the basic infrastructure (if not available):
 8. Deploy part one (basic infrastructure) using command:
  ```bash
 cdk deploy VpcStack --require-approval never --method=direct
@@ -249,8 +236,9 @@ cdk deploy ApplicationStack --require-approval never --method=direct
 It should take about 4-5 minutes to complete
 
 ## Deployment Validation
+
 After the guidance deployment is completed, it can be validated either in AWS Console or via AWS CLI. 
-Below are instructions on how to validate deployment via AWS Console:
+Below are instructions on how to validate guidance deployment via AWS Console:
 1. Log into the AWS Account
 2. Open [CloudFormation console](https://console.aws.amazon.com/cloudformation/) and verify the status of the Stack with the name `ApplictationStack`. It should be green and have Status `CREATE_COMPLETE`
 3. Open [StepFunctions console](https://console.aws.amazon.com/states), look for state machine called `FloatingIP-StateMachine` and open it. There should be some executions alredy in Status either `Succeeded` or still `Running`.
@@ -260,14 +248,16 @@ If the Part one (see above) was deployed, there should be route for `IP = 20.0.0
 
 ## Running the Guidance
 
+<!--
 <Provide instructions to run the Guidance with the sample data or input provided, and interpret the output received.> 
-
 This section should include:
 
 * Guidance inputs
 * Commands to run
 * Expected output (provide screenshot if possible)
 * Output description
+-->
+Since the guidance is satisfying a specific technical requirement for a static, single IP address to access an IT system from within the private network, its validation can be performed using such static IP address from a client application that needs to access a AWS resource(s) using such IP address in that network. 
 
 ## Cleanup
 To remove the guidance and the related AWS infrastructure follow the steps below:
