@@ -26,7 +26,7 @@ Floating (or virtual) IP provides a solution to have one fixed IP and dynamicall
 ### Use Cases
 
 Primary Use Case for this guidance is a situation when an application or its architetcural components require static IP address for communication spanning multiple AWS AZs and/or hybrid environments. 
-If possible, consider using AWS native services availablex before implementing this guidance such as: Amazon Elastic Load Balancers and Amazon Route53 or Amazon Global Accelerator. AWS managed services provide high quality functionality without operational overhead required from you and should be prioritized before deploying custom code.
+If possible, consider using AWS native services available before implementing this guidance, such as: Amazon Elastic Load Balancers and Amazon Route53 or Amazon Global Accelerator. AWS managed services provide high quality functionality without operational overhead required from you and should be prioritized before deploying custom code.
 
 ### Architecture
 
@@ -257,7 +257,7 @@ This section should include:
 * Expected output (provide screenshot if possible)
 * Output description
 -->
-Since the guidance is satisfying a specific technical requirement for a static, single IP address to access an IT system from within the private network, its validation can be performed using such static IP address from a client application that needs to access a AWS resource(s) using such IP address in that network. 
+Since the guidance is satisfying a specific technical requirement for a static, single IP address to access an IT system from within the private network, it can be used by a client application that needs to access a AWS resource(s) using such floating virtual IP address in that network as an endpoint. 
 
 ## Cleanup
 To remove the guidance and the related AWS infrastructure follow the steps below:
