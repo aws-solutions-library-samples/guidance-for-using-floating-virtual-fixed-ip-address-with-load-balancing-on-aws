@@ -180,6 +180,24 @@ This guidance relies on many reasonable default options and "principle of least 
 ### Supported Regions (if applicable)
 
 <!-- If the Guidance is built for specific AWS Regions, or if the services used in the Guidance do not support all Regions, please specify the Region this Guidance is best suited for -->
+Multi Account Outposts Operations Guide is supported in the following AWS Regions:
+
+| **Region Name**  | | 
+|-----------|------------|
+|US East (Ohio) | AWS GovCloud (US-West)|
+|US East (N. Virginia) | AWS GovCloud (US-East) |
+|US West (Northern California) | Middle East (Bahrain) |
+|US West (Oregon) | Middle East (UAE) |
+|Canada (Central)  | Israel (Tel Aviv) |
+|South America (São Paulo)  | Africa (Cape Town) |
+|EU (Frankfurt)  | Asia Pacific (Singapore) |
+|EU (Stockholm) | Asia Pacific (Sydney) |
+|EU (Ireland)  | Asia Pacific (Jakarta) |
+|EU (Milan) | Asia Pacific (Tokyo) |
+|EU (Spain)  | Asia Pacific ( Seoul ) |
+|EU (London) | Asia Pacific (Osaka) |
+|Europe (Paris)  | Asia Pacific (Mumbai) |
+
 
 ## Deployment Steps
 
