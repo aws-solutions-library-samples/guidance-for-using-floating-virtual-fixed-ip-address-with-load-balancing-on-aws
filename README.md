@@ -215,10 +215,11 @@ tcs
 
 ### (Part 1) Deploy the basic infrastructure (if not available):
 8. Deploy part one (basic infrastructure) using command:
- ```bash
+```bash
 cdk deploy VpcStack --require-approval never --method=direct
 ```
  Wait until the deployment finishes. It should take about 3-4 minutes. At the end of deployment, outputs are shown.
+ 
 9. Execute the helper script with command:
 ```bash
 sh prepare-cdk-json.sh default
