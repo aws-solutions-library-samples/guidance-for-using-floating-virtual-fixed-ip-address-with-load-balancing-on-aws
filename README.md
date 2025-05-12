@@ -262,12 +262,13 @@ Since the guidance is satisfying a specific technical requirement for a static, 
 
 ## Cleanup
 To remove the guidance and the related AWS infrastructure follow the steps below:
-1. Remove the ApplicationStack using command:
- ```bash
+1. Remove the `ApplicationStack` using command:
+```bash
 cdk destroy ApplicationStack
 ``` 
 Confirm the removal of the ApplicationStack. 
-2. Remove the VpcStack using command:
+
+2. Remove the `VpcStack` using command:
 ```bash
 cdk destroy VpcStack
 ```
