@@ -107,7 +107,7 @@ This Guidance uses [AWS Serverless](https://aws.amazon.com/serverless/) managed 
 - VPC where the guidance infrastructure is deployed has Internet access or VPC Endpoints to Cloudwatch and monitoring. Endpoints can be accessed by probing and Failover Lambda functions.
 - Target instances should have security groups configured in a way, that the probing lambda can access them(e.g. source and port are open for the Lambda's ENI)
 
-By deploying the `VpcStack`, which is an optional [part one](#deploy-part-one-basic-infrastructure) of this guidance, the prerequisites can be deployed as well.
+By deploying the `VpcStack`, which is an optional [part one](#part-1-deploy-the-basic-infrastructure-if-not-available) of this guidance, the prerequisites can be deployed as well.
 
 ### Operating System
 This guidance requires, that the floating-ip is known to the operating system and configured for the network adapter on the target instances. By default, AMIs for AL2(Amazon Linux 2), configure only the IP addresses provided during instantiation of the instance. 
@@ -128,31 +128,16 @@ IPADDR=20.0.0.10
 5. Restart the networking service:  `service network restart`
 6. Validate the IP `ip addr show eth0`. The additional IP address should be visible.
 
+<!--
 ### Third-party tools (If applicable)
 
 *List any installable third-party tools required for deployment.*
-
 
 ### AWS account requirements (If applicable)
 
 This deployment requires that the CDK is installed and configured in AWS Account.
 
 *List out pre-requisites required on the AWS account if applicable, this includes enabling AWS regions, requiring ACM certificate.*
-<!--
-**Example:** “This deployment requires you have public ACM certificate available in your AWS account”
-
-**Example resources:**
-- ACM certificate 
-- DNS record
-- S3 bucket
-- VPC
-- IAM role with specific permissions
-- Enabling a Region or service etc.
-
-
-### aws cdk bootstrap (if sample code has aws-cdk)
-<If using aws-cdk, include steps for account bootstrap for new cdk users.>
-**Example blurb:** “This Guidance uses aws-cdk. If you are using aws-cdk for first time, please perform the below bootstrapping....”
 -->
 
 ### Security
@@ -163,13 +148,12 @@ This guidance relies on many reasonable default options and "principle of least 
 
 **NOTE**: Please note that by cloning and using third party open-source code, you assume responsibility for its patching, securing, and managing in the context of this project.
 
-
 ### Supported Regions (if applicable)
 
 <!-- If the Guidance is built for specific AWS Regions, or if the services used in the Guidance do not support all Regions, please specify the Region this Guidance is best suited for -->
-Multi Account Outposts Operations Guide is supported in the following AWS Regions:
+Guidance for using Floating/virtual fixed IP address with Load Balancing is supported in the following AWS Regions:
 
-| **Region Name**  | | 
+| **Region Name**  | **Region Code**| 
 |-----------|------------|
 |US East (Ohio) | AWS GovCloud (US-West)|
 |US East (N. Virginia) | AWS GovCloud (US-East) |
@@ -212,7 +196,6 @@ npm install
 ```bash
 tcs
 ```
-
 ### (Part 1) Deploy the basic infrastructure (if not available):
 8. Deploy part one (basic infrastructure) using command:
 ```bash
@@ -262,13 +245,13 @@ Since the guidance is satisfying a specific technical requirement for a static, 
 
 ## Cleanup
 To remove the guidance and the related AWS infrastructure follow the steps below:
-1. Remove the `ApplicationStack` using command:
+1. Remove the `ApplicationStack` Cloud Fomation stack using command:
 ```bash
 cdk destroy ApplicationStack
 ``` 
 Confirm the removal of the ApplicationStack. 
 
-2. Remove the `VpcStack` using command:
+2. Remove the `VpcStack` Cloud Fomation stack using command:
 ```bash
 cdk destroy VpcStack
 ```
