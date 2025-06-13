@@ -34,23 +34,23 @@ Below is the reference architecture of this guidance showing AWS services deploy
 
 The VPCs, subnets and the target EC2 Instances, representing business application, could be pre-existing ones or can be deployed as part of this guidance. For more information, please refer to the [Deployment Steps](#deployment-steps) below. 
 
-![img](assets/floating-ip-reference-architecture_v2.jpg)
+![img](assets/implementing-floating-ip-addresses-with-failover-capabilities-on-aws-final.jpg)
 **Figure 1. Reference Architecture for Floating/virtual fixed IP address with Load Balancing on AWS** 
 
 **Architecture Workflow**
 
-0. The client application (e.g. running on [Amazon EC2](https://aws.amazon.com/pm/ec2/) ) connects to the target AWS Cloud resource through floating-IP. It represents the business application.
-1. [Amazon EventBridge](https://aws.amazon.com/eventbridge/) Scheduler invokes every minute the [AWS Step Functions](https://aws.amazon.com/step-functions/) flow which orchestrates the health checks and failover process of floating-IP, if needed.. 
-2. AWS Step Functions flow execution iterates over set of steps every N seconds, where N is configurable, its execution runs up to one minute.
-3. As an initial step, the context (probing counter and last probing result) from previous Step Function execution is retrieved from [Amazon DynamoDB](https://aws.amazon.com/pm/dynamodb/).
-4. AWS Lambda probing function is invoked. The context from previous execution is passed as its input.
-5. The probing AWS Lambda function checks the health of the target of the floating-IP, returns the probing result back to AWS Step Functions execution. In case of failed health check, it increases the count of failed health checks by one and sets the probing result to ”failed”. 
-6. The probing Lambda function logs metrics like response time and failed probes in [Amazon CloudWatch](https://aws.amazon.com/cloudwatch/) Metrics
-7. If the threshold of failed health checks is reached, the failover procedure is initialized by Step Functions flow. The failover  AWS Lambda function is invoked to execute the procedure.
-8. The failover AWS Lambda function manipulates one or more Route Tables, and changes the target ENI (Elastic Network Interface) of the route associated with the floating-IP to the one in "secondary" subnet
-9. The failover function logs failover count metrics in Amazon CloudWatch Metrics.
-10. By the end of the AWS Step Functions execution, the context of the execution is stored in the Amazon DynamoDB.
-11. All metrics in Amazon CloudWatch could be used to build monitoring dashboards or set alarms in CloudWatch.
+1. A client application connects to the target system through the floating IP address. 
+2. [Amazon EventBridge](https://aws.amazon.com/eventbridge/) Scheduler invokes every minute the [AWS Step Functions](https://aws.amazon.com/step-functions/) flow which orchestrates the health checks and failover process of floating-IP, if needed.. 
+3. AWS Step Functions flow execution iterates over set of steps every N seconds, where N is configurable, its execution runs up to one minute.
+4. As an initial step, the context (probing counter and last probing result) from previous Step Function execution is retrieved from [Amazon DynamoDB](https://aws.amazon.com/pm/dynamodb/).
+5. [AWS Lambda](https://aws.amazon.com/lambda/) probing function is invoked. The context from previous execution is passed as its input.
+6. The Lambda probing function checks the health of the target of the floating IP address, which was initially set in the primary subnet and corresponding elastic network interface (ENI) attached to Amazon Elastic Compute Cloud (Amazon EC2). It then returns the probing result to the Step Functions implementation.
+7. The Lambda probing function logs metrics like response time and failed probes in [Amazon CloudWatch](https://aws.amazon.com/cloudwatch/) Metrics
+8. If the threshold of failed health checks is reached, the failover procedure is initialized by Step Functions flow. The failover  AWS Lambda function is invoked to execute the procedure.
+9. The Lambda failover function updates one or more Amazon Virtual Private Cloud (Amazon VPC) route tables. It changes the target ENI attached to Amazon EC2 of the route associated with the floating IP address to the one set in a secondary subnet. 
+10. The failover function logs failover count metrics in Amazon CloudWatch.
+11. By the end of the AWS Step Functions execution, the context of the execution is stored in the Amazon DynamoDB database.
+12. All relevant metrics stored in CloudWatch can be used to build comprehensive dashboards and create alarms for observability purposes. 
 
 
 ### AWS Services used in this Guidance
