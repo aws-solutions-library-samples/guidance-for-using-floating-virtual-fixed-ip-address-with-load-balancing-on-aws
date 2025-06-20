@@ -244,8 +244,9 @@ This section should include:
 Since the guidance is satisfying a specific technical requirement for a static, single IP address to access an IT system from within the private network, it can be used by a client application that needs to access a AWS resource(s) using such floating virtual IP address in that network as an endpoint. 
 
 ## Cleanup
-To remove the guidance and the related AWS infrastructure follow the steps below:
+To remove the guidance and the related AWS srvices,  please follow the steps below:
 1. Remove the `ApplicationStack` Cloud Fomation stack using command:
+
 ```bash
 cdk destroy ApplicationStack
 ``` 
@@ -258,17 +259,6 @@ cdk destroy VpcStack
  Confirm the removal of the stack. This is needed if the `VpcStack` was deployed as part of this guidance. 
 3. Ensure that the Stacks were destroyed successfully. Navidate to [CloudFormation console](https://console.aws.amazon.com/cloudformation/) and verify that there is no Stacks named `VpcStack` or `ApplicationStack`
 
-## FAQ, known issues, additional considerations, and limitations (optional)
-
-
-**Known issues (optional)**
-
-<If there are common known issues, or errors that can occur during the Guidance deployment, describe the issue and resolution steps here>
-
-
-**Additional considerations (if applicable)**
-
-
 ## License
 
 This library is licensed under the MIT-0 License. See the [LICENSE](LICENSE) file.
@@ -279,11 +269,10 @@ See [CONTRIBUTING](CONTRIBUTING.md) for more information.
 
 ## Notices
 
-
 *Customers are responsible for making their own independent assessment of the information in this Guidance. This Guidance: (a) is for informational purposes only, (b) represents AWS current product offerings and practices, which are subject to change without notice, and (c) does not create any commitments or assurances from AWS and its affiliates, suppliers or licensors. AWS products or services are provided “as is” without warranties, representations, or conditions of any kind, whether express or implied. AWS responsibilities and liabilities to its customers are controlled by AWS agreements, and this Guidance is not part of, nor does it modify, any agreement between AWS and its customers.*
 
 
 ## Authors
 
-Daniel Zilberman, Sr SA AWS Tech Solutions <br/>
-Michal Kolodziej, Sr. WW Specialist SA Networking
+Daniel Zilberman, Sr WW Specialist SA, AWS Tech Solutions <br/>
+Michal Kolodziej, Sr. WW Specialist SA, Networking
