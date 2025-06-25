@@ -38,5 +38,5 @@ new ApplicationStack(app, 'ApplicationStack', {
     account: process.env.CDK_DEFAULT_ACCOUNT,
     region: process.env.CDK_DEFAULT_REGION
   },
-  description: 'Guidance for using floating virtual ip address on aws (S_____)'
+  description: 'Guidance for using floating virtual ip address on aws (SO9040)'
 });
