@@ -188,7 +188,7 @@ git clone https://github.com/aws-solutions-library-samples/guidance-for-using-fl
 ```bash
 cd guidance-for-using-floating-virtual-fixed-ip-address-with-load-balancing-on-aws
 ```
-6. Download the node dependencies using command:
+6. Download the node.js dependencies using command:
 ```bash
 npm install
 ```
@@ -207,13 +207,13 @@ cdk deploy VpcStack --require-approval never --method=direct
 ```bash
 sh prepare-cdk-json.sh default
 ``` 
-to automatically prepare for `cdk.json` based on the instracture deployed in previous step. 
+to automatically prepare contents of `cdk.json` configuration file for AWS CDK deployment based on the instracture deployed in previous step. 
 The contents of `cdk.json` can be prepared manually: Look for the Output from previous step, and replace placeholders `ENTER-VALUE` in the file with appropriate values from that ouput.
 
 ### (Part 2) Deploy the guidance:
 
-10. Configure `cdk.json`. Replace `ENTER-VALUE` placeholders with real values. Those values come from preexisting infrastructure. If the part one(basic infrastructure) of this deployment was executed, the file is already prepared and ready to be used.
-11. Deploy this guidance using command:
+10. Configure `cdk.json`. Replace `ENTER-VALUE` placeholders with actual values - those values come from preexisting infrastructure. If the part one(basic infrastructure) of this deployment was executed, this file is already configured with proper parameter values and ready to be used.
+11. Deploy the guidance using command:
 ```bash
 cdk deploy ApplicationStack --require-approval never --method=direct
 ```
@@ -232,15 +232,6 @@ If the Part one (see above) was deployed, there should be route for `IP = 20.0.0
 
 ## Running the Guidance
 
-<!--
-<Provide instructions to run the Guidance with the sample data or input provided, and interpret the output received.> 
-This section should include:
-
-* Guidance inputs
-* Commands to run
-* Expected output (provide screenshot if possible)
-* Output description
--->
 Since the guidance is satisfying a specific technical requirement for a static, single IP address to access an IT system from within the private network, it can be used by a client application that needs to access a AWS resource(s) using such floating virtual IP address in that network as an endpoint. 
 
 ## Cleanup
