@@ -148,27 +148,9 @@ This guidance relies on many reasonable default options and "principle of least 
 
 **NOTE**: Please note that by cloning and using third party open-source code, you assume responsibility for its patching, securing, and managing in the context of this project.
 
-### Supported Regions (if applicable)
+### Supported Regions
 
-<!-- If the Guidance is built for specific AWS Regions, or if the services used in the Guidance do not support all Regions, please specify the Region this Guidance is best suited for -->
-Guidance for using Floating/virtual fixed IP address with Load Balancing is supported in the following AWS Regions:
-
-| **Region Name**  | **Region Code**| 
-|-----------|------------|
-|US East (Ohio) | AWS GovCloud (US-West)|
-|US East (N. Virginia) | AWS GovCloud (US-East) |
-|US West (Northern California) | Middle East (Bahrain) |
-|US West (Oregon) | Middle East (UAE) |
-|Canada (Central)  | Israel (Tel Aviv) |
-|South America (São Paulo)  | Africa (Cape Town) |
-|EU (Frankfurt)  | Asia Pacific (Singapore) |
-|EU (Stockholm) | Asia Pacific (Sydney) |
-|EU (Ireland)  | Asia Pacific (Jakarta) |
-|EU (Milan) | Asia Pacific (Tokyo) |
-|EU (Spain)  | Asia Pacific ( Seoul ) |
-|EU (London) | Asia Pacific (Osaka) |
-|Europe (Paris)  | Asia Pacific (Mumbai) |
-
+Guidance for using Floating/virtual fixed IP address with Load Balancing is supported in all commercial AWS Regions where the [used services](#aws-services-used-in-this-guidance) are available. 
 
 ## Deployment Steps
 
